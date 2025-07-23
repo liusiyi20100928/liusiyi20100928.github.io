@@ -1,283 +1,564 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小刘 - 技术专家 | 刷机 · 维修 · 逆向</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    <script type="module" src="/src/js/utils/common.js"></script>
-    <script type="module" src="/src/js/browserMain.js"></script>
+        :root {
+            --primary: #0ff;
+            --secondary: #f0f;
+            --accent: #ff0;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --glass: rgba(20, 20, 40, 0.75);
+        }
 
-    <title>Betaflight</title>
-    <meta name="description" content="Configuration and management tool for the Betaflight flight control firmware">
-    <link rel="icon" href="/images/pwa/favicon.ico">
-    <link rel="apple-touch-icon" href="/images/pwa/apple-touch-icon.png" sizes="128x128">
-    <meta name="theme-color" content="#eea600">
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 100px;
+            line-height: 1.6;
+        }
+
+        /* 头部样式 - 简化设计 */
+        header {
+            padding: 20px 5%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 30, 0.9);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .logo span {
+            color: var(--accent);
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 主内容区 - 移动端优化 */
+        .hero {
+            padding: 30px 5% 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin: 15px 0 20px;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.3;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 技能卡片区域 - 优化点击体验 */
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 0 5%;
+        }
+
+        .skill-card {
+            background: var(--glass);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-card:active {
+            transform: scale(0.98);
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(90deg, rgba(0, 200, 200, 0.2), transparent);
+            cursor: pointer;
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 50, 50, 0.3);
+            margin-right: 15px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .skill-title {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            text-align: left;
+            flex: 1;
+        }
+
+        .skill-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
+        }
+
+        .skill-card.active .skill-content {
+            max-height: 1000px;
+            padding: 0 20px 20px;
+        }
+        
+        .skill-card.active .skill-icon {
+            transform: rotate(15deg);
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent);
+        }
+
+        .skill-list {
+            padding: 15px 0 0 20px;
+        }
+
+        .skill-list li {
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            font-size: 1rem;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .skill-list li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            position: absolute;
+            left: 0;
+        }
+
+        /* 联系方式区域 - 优化设计 */
+        .contact-section {
+            margin: 40px 5%;
+            padding: 25px 20px;
+            background: var(--glass);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            animation: gradientBG 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin: 10px 0 25px;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .contact-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 100, 100, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3px;
+        }
+
+        .contact-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            word-break: break-all;
+        }
+
+        .highlight {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(0, 200, 200, 0.2);
+            border-radius: 8px;
+            margin-top: 5px;
+            border: 1px solid var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        /* 页脚 - 优化设计 */
+        footer {
+            text-align: center;
+            padding: 25px 5%;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .developer-info {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .developer-info span {
+            color: var(--accent);
+        }
+
+        .copyright {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* 动画效果 */
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
+            50% { text-shadow: 0 0 15px var(--primary), 0 0 25px var(--secondary); }
+            100% { text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.4); }
+            70% { opacity: 1; box-shadow: 0 0 0 10px rgba(0, 255, 255, 0); }
+            100% { opacity: 0.7; box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+        }
+
+        /* 背景装饰元素 */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+        }
+        
+        .bg-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: -100px;
+            left: -100px;
+            animation: float 12s infinite ease-in-out;
+        }
+        
+        .bg-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            bottom: -150px;
+            right: -100px;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .bg-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            33% { transform: translate(20px, 20px); }
+            66% { transform: translate(-20px, -20px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .skills-container {
+                max-width: 800px;
+                margin: 30px auto;
+            }
+            
+            .contact-section {
+                max-width: 800px;
+                margin: 50px auto;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="main-wrapper">
-    <div id="background"></div>
-    <div id="side_menu_swipe"></div>
-    <div class="headerbar">
-        <div id="menu_btn">
-            <em class="fas fa-bars"></em>
-        </div>
-        <betaflight-logo
-            :configurator-version="CONFIGURATOR.getDisplayVersion()"
-            :firmware-version="FC.CONFIG.flightControllerVersion"
-            :firmware-id="FC.CONFIG.flightControllerIdentifier"
-            :hardware-id="FC.CONFIG.hardwareName"
-        ></betaflight-logo>
-        <port-picker
-            v-model="PortHandler.portPicker"
-            :connected-devices="PortHandler.currentPorts"
-            :show-virtual-option="PortHandler.showVirtualMode"
-            :show-manual-option="PortHandler.showManualMode"
-            :disabled="PortHandler.portPickerDisabled"
-        ></port-picker>
-        <div class="header-wrapper">
-            <div id="quad-status_wrapper">
-                <battery-icon
-                    :voltage="FC.ANALOG.voltage"
-                    :vbatmincellvoltage="FC.BATTERY_CONFIG.vbatmincellvoltage"
-                    :vbatmaxcellvoltage="FC.BATTERY_CONFIG.vbatmaxcellvoltage"
-                    :vbatwarningcellvoltage="FC.BATTERY_CONFIG.vbatwarningcellvoltage"
-                    :batteryState="FC.BATTERY_STATE?.batteryState"
-                    :vbatcellcount="FC.BATTERY_STATE?.cellCount"
-                >
-                </battery-icon>
-                <battery-legend
-                    :voltage="FC.ANALOG.voltage"
-                    :vbatmaxcellvoltage="FC.BATTERY_CONFIG.vbatmaxcellvoltage"
-                    :vbatcellcount="FC.BATTERY_STATE?.cellCount"
-                ></battery-legend>
-                <div class="bottomStatusIcons">
-                    <div class="armedicon cf_tip" i18n_title="mainHelpArmed"></div>
-                    <div class="failsafeicon cf_tip" i18n_title="mainHelpFailsafe"></div>
-                    <div class="linkicon cf_tip" i18n_title="mainHelpLink"></div>
+    <!-- 背景装饰元素 -->
+    <div class="bg-elements">
+        <div class="bg-element bg-1"></div>
+        <div class="bg-element bg-2"></div>
+        <div class="bg-element bg-3"></div>
+    </div>
+    
+    <header>
+        <div class="logo">小刘<span>技术空间</span></div>
+        <p class="tagline">专业刷机 · 手机维修 · 网络逆向</p>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h1>技术专家 · 小刘</h1>
+            
+            <div class="skills-container">
+                <div class="skill-card active">
+                    <div class="skill-header" onclick="toggleSkill(this)">
+                        <div class="skill-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="skill-title">专业刷机</h3>
+                    </div>
+                    <div class="skill-content">
+                        <p class="skill-description">提供各类安卓/iOS设备刷机服务：</p>
+                        <ul class="skill-list">
+                            <li>安卓ROOT与解锁Bootloader</li>
+                            <li>iOS越狱与签名服务</li>
+                            <li>定制ROM刷入与优化</li>
+                            <li>救砖与系统修复</li>
+                            <li>设备性能深度优化</li>
+                            <li>刷机风险规避方案</li>
+                            <li>刷机后系统稳定性测试</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="skill-card">
+                    <div class="skill-header" onclick="toggleSkill(this)">
+                        <div class="skill-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="skill-title">手机维修</h3>
+                    </div>
+                    <div class="skill-content">
+                        <p class="skill-description">专业硬件维修服务：</p>
+                        <ul class="skill-list">
+                            <li>屏幕与电池更换</li>
+                            <li>主板维修与芯片级维修</li>
+                            <li>进水设备抢救</li>
+                            <li>数据恢复服务</li>
+                            <li>各类接口维修</li>
+                            <li>设备全面检测</li>
+                            <li>硬件升级服务</li>
+                            <li>设备防水处理</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="skill-card">
+                    <div class="skill-header" onclick="toggleSkill(this)">
+                        <div class="skill-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="skill-title">网络逆向</h3>
+                    </div>
+                    <div class="skill-content">
+                        <p class="skill-description">网络与安全逆向服务：</p>
+                        <ul class="skill-list">
+                            <li>协议分析与逆向工程</li>
+                            <li>Android/iOS应用逆向</li>
+                            <li>加密算法分析</li>
+                            <li>漏洞挖掘与利用</li>
+                            <li>安全加固方案</li>
+                            <li>定制化安全工具开发</li>
+                            <li>网络协议安全审计</li>
+                            <li>恶意软件分析</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div id="sensor-status" class="sensor_state mode-connected">
-                <ul>
-                    <li class="gyro" i18n_title="sensorStatusGyro">
-                        <div class="gyroicon" i18n="sensorStatusGyroShort"></div>
-                    </li>
-                    <li class="accel" i18n_title="sensorStatusAccel">
-                        <div class="accicon" i18n="sensorStatusAccelShort"></div>
-                    </li>
-                    <li class="mag" i18n_title="sensorStatusMag">
-                        <div class="magicon" i18n="sensorStatusMagShort"></div>
-                    </li>
-                    <li class="baro" i18n_title="sensorStatusBaro">
-                        <div class="baroicon" i18n="sensorStatusBaroShort"></div>
-                    </li>
-                    <li class="gps" i18n_title="sensorStatusGPS">
-                        <div class="gpsicon" i18n="sensorStatusGPSShort"></div>
-                    </li>
-                    <li class="sonar" i18n_title="sensorStatusSonar">
-                        <div class="sonaricon" i18n="sensorStatusSonarShort"></div>
-                    </li>
-                </ul>
-            </div>
-            <div id="dataflash_wrapper_global">
-                <div class="noflash_global" align="center" i18n="sensorDataFlashNotFound"></div>
-                <ul class="dataflash-contents_global">
-                    <li class="dataflash-free_global">
-                        <div class="legend" i18n="sensorDataFlashFreeSpace"></div>
-                    </li>
-                </ul>
-                <div id="expertMode" align="center">
-                    <label>
-                        <input name="expertModeCheckbox" class="togglesmall" type="checkbox"/>
-                        <span i18n="expertMode"></span>
-                    </label>
+        </section>
+        
+        <!-- 联系方式 -->
+        <section class="contact-section">
+            <h2 class="section-title">联系我</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">开发者</div>
+                        <div class="contact-value">小刘</div>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">位置</div>
+                        <div class="contact-value">深圳 · 中国</div>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">微信</div>
+                        <div class="contact-value">
+                            <span class="highlight">shuajijiuzhuan</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fab fa-qq"></i>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">QQ</div>
+                        <div class="contact-value">
+                            <span class="highlight">3573926115</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="developer-info">
+            <p>开发人: <span>小刘</span> | 微信: <span>shuajijiuzhuan</span> | QQ: <span>3573926115</span></p>
         </div>
-        <div id="header_btns">
-            <div class="open_firmware_flasher" id="flashbutton">
-                <div class="firmware_b">
-                    <a class="flash disabled" href="#"></a>
-                </div>
-                <div class="flash_state" i18n="flashTab"></div>
-            </div>
-            <div class="connect_controls" id="connectbutton">
-                <div class="connect_b">
-                    <a class="connect disabled" href="#"></a>
-                </div>
-                <div class="connect_state" i18n="connect"></div>
-            </div>
-        </div>
-        <div id="reveal_btn">
-            <em class="fas fa-ellipsis-v"></em>
-        </div>
-    </div>
-    <div id="log">
-        <div class="logswitch">
-            <a href="#" id="showlog" i18n="logActionShow"></a>
-        </div>
-        <div id="scrollicon"></div>
-        <div class="wrapper"></div>
-    </div>
-    <div id="tab-content-container">
-        <div class="tab_container">
-            <betaflight-logo
-                :configurator-version="CONFIGURATOR.getDisplayVersion()"
-                :firmware-version="FC.CONFIG.flightControllerVersion"
-                :firmware-id="FC.CONFIG.flightControllerIdentifier"
-                :hardware-id="FC.CONFIG.hardwareName"
-            ></betaflight-logo>
-            <div id="tabs">
-                <ul class="mode-disconnected">
-                    <li class="tab_landing" id="tab_landing"><a href="#" i18n="tabLanding" class="tabicon ic_welcome" i18n_title="tabLanding"></a></li>
-                    <li class="tab_privacy_policy"><a href="#" class="tabicon ic_help" i18n="tabPrivacyPolicy"></a></li>
-                    <li class="tab_help" id="tab_help"><a href="#" i18n="tabHelp" class="tabicon ic_help" i18n_title="tabHelp"></a></li>
-                    <li class="tab_options" id="tab_options"><a href="#" i18n="tabOptions" class="tabicon ic_config" i18n_title="tabOptions"></a></li>
-                    <li class="tab_firmware_flasher" id="tabFirmware"><a href="#" i18n="tabFirmwareFlasher" class="tabicon ic_flasher" i18n_title="tabFirmwareFlasher"></a></li>
-                </ul>
-                <ul class="mode-connected">
-                    <li class="tab_setup"><a href="#" i18n="tabSetup" class="tabicon ic_setup" i18n_title="tabSetup"></a></li>
-                    <li class="tab_setup_osd"><a href="#" i18n="tabSetupOSD" class="tabicon ic_setup" i18n_title="tabSetupOSD"></a></li>
-                    <li class="tab_ports"><a href="#" i18n="tabPorts" class="tabicon ic_ports" i18n_title="tabPorts"></a></li>
-                    <li class="tab_configuration"><a href="#" i18n="tabConfiguration" class="tabicon ic_config" i18n_title="tabConfiguration"></a></li>
-                    <li class="tab_power"><a href="#" i18n="tabPower" class="tabicon ic_power" i18n_title="tabPower"></a></li>
-                    <li class="tab_failsafe"><a href="#" i18n="tabFailsafe" class="tabicon ic_failsafe" i18n_title="tabFailsafe"></a></li>
-                    <li class="tab_presets"><a href="#" i18n="tabPresets" class="tabicon ic_wizzard" i18n_title="tabPresets"></a></li>
-                    <li class="tab_pid_tuning"><a href="#" i18n="tabPidTuning" class="tabicon ic_pid" i18n_title="tabPidTuning"></a></li>
-                    <li class="tab_receiver"><a href="#" i18n="tabReceiver" class="tabicon ic_rx" i18n_title="tabReceiver"></a></li>
-                    <li class="tab_auxiliary"><a href="#" i18n="tabAuxiliary" class="tabicon ic_modes" i18n_title="tabAuxiliary"></a></li>
-                    <li class="tab_adjustments"><a href="#" i18n="tabAdjustments" class="tabicon ic_adjust" i18n_title="tabAdjustments"></a></li>
-                    <li class="tab_servos"><a href="#" i18n="tabServos" class="tabicon ic_servo" i18n_title="tabServos"></a></li>
-                    <li class="tab_gps"><a href="#" i18n="tabGPS" class="tabicon ic_gps" i18n_title="tabGPS"></a></li>
-                    <li class="tab_motors"><a href="#" i18n="tabMotorTesting" class="tabicon ic_motor" i18n_title="tabMotorTesting"></a></li>
-                    <li class="tab_osd"><a href="#" i18n="tabOsd" class="tabicon ic_osd" i18n_title="tabOsd"></a></li>
-                    <li class="tab_vtx"><a href="#" i18n="tabVtx" class="tabicon ic_vtx" i18n_title="tabVtx"></a></li>
-                    <li class="tab_transponder"><a href="#" i18n="tabTransponder" class="tabicon ic_transponder" i18n_title="tabTransponder"></a></li>
-                    <li class="tab_led_strip"><a href="#" i18n="tabLedStrip" class="tabicon ic_led" i18n_title="tabLedStrip"></a></li>
-                    <li class="tab_sensors"><a href="#" i18n="tabRawSensorData" class="tabicon ic_sensors" i18n_title="tabRawSensorData"></a></li>
-                    <li class="tab_logging"><a href="#" i18n="tabLogging" class="tabicon ic_log" i18n_title="tabLogging"></a></li>
-                    <li class="tab_onboard_logging"><a href="#" i18n="tabOnboardLogging" class="tabicon ic_data" i18n_title="tabOnboardLogging"></a></li>
-                    <!-- spare icons
-                    <li class=""><a href="#"class="tabicon ic_mission">Mission (spare icon)</a></li>
-                    <li class=""><a href="#"class="tabicon ic_advanced">Advanced (spare icon)</a></li>
-                    <li class=""><a href="#"class="tabicon ic_wizzard">Wizzard (spare icon)</a></li>
-                    -->
-                </ul>
-                <ul class="mode-connected mode-connected-cli">
-                    <li class="tab_cli"><a href="#" i18n="tabCLI" class="tabicon ic_cli" i18n_title="tabCLI"></a></li>
-                </ul>
-            </div>
-            <div class="clear-both"></div>
-        </div>
-        <div id="content"></div>
-    </div>
-    <status-bar
-            :port-usage-down="PortUsage.port_usage_down"
-            :port-usage-up="PortUsage.port_usage_up"
-            :packet-error="MSP.packet_error"
-            :i2c-error="FC.CONFIG.i2cError"
-            :cycle-time="FC.CONFIG.cycleTime"
-            :cpu-load="FC.CONFIG.cpuload"
-
-            :configurator-version="CONFIGURATOR.getDisplayVersion()"
-            :firmware-version="FC.CONFIG.flightControllerVersion"
-            :firmware-id="FC.CONFIG.flightControllerIdentifier"
-            :hardware-id="FC.CONFIG.hardwareName"
-    ></status-bar>
-    <div id="cache">
-        <div class="data-loading">
-            <p>Waiting for data ...</p>
-        </div>
-    </div>
-</div>
-
-    <dialog class="dialogConfiguratorUpdate">
-        <h3 i18n="noticeTitle"></h3>
-        <div class="content">
-            <div class="dialogConfiguratorUpdate-content" style="margin-top: 10px"></div>
-        </div>
-        <div class="buttons">
-            <a href="#" class="dialogConfiguratorUpdate-websitebtn regular-button" i18n="configuratorUpdateWebsite"></a>
-            <a href="#" class="dialogConfiguratorUpdate-closebtn regular-button" i18n="close"></a>
-        </div>
-    </dialog>
-
-    <dialog class="dialogConnectWarning">
-        <h3 i18n="warningTitle"></h3>
-        <div class="content">
-            <div class="dialogConnectWarning-content" style="margin-top: 10px"></div>
-        </div>
-        <div class="buttons">
-            <a href="#" class="dialogConnectWarning-closebtn regular-button" i18n="close"></a>
-        </div>
-    </dialog>
-
-    <dialog id="dialogResetToCustomDefaults">
-        <h3 i18n="noticeTitle"></h3>
-        <div class="content">
-            <div id="dialogResetToCustomDefaults-content" i18n="resetToCustomDefaultsDialog"></div>
-        </div>
-        <div>
-            <span class="buttons">
-                <a href="#" id="dialogResetToCustomDefaults-acceptbtn" class="regular-button" i18n="resetToCustomDefaultsAccept"></a>
-            </span>
-            <span class="buttons">
-                <a href="#" id="dialogResetToCustomDefaults-cancelbtn" class="regular-button" i18n="cancel"></a>
-            </span>
-        </div>
-    </dialog>
-
-    <dialog id="dialogReportProblems">
-        <h3 i18n="warningTitle"></h3>
-        <div class="content">
-            <div id="dialogReportProblems-header" i18n="reportProblemsDialogHeader"></div>
-            <ul id="dialogReportProblems-list">
-                <!-- List elements added dynamically -->
-            </ul>
-            <div id="dialogReportProblems-footer" i18n="reportProblemsDialogFooter"></div>
-        </div>
-        <div>
-            <span class="buttons">
-                <a href="#" id="dialogReportProblems-closebtn" class="regular-button" i18n="close"></a>
-            </span>
-        </div>
-    </dialog>
-
-    <ul class="hidden"> <!-- Sonar says so -->
-        <li id="dialogReportProblems-listItemTemplate" class="dialogReportProblems-listItem"></li>
-    </ul>
-
-    <dialog class="dialogError">
-        <h3 i18n="errorTitle"></h3>
-        <div class="content">
-            <div class="dialogError-content" style="margin-top: 10px"></div>
-        </div>
-        <div class="buttons">
-            <a href="#" class="dialogError-closebtn regular-button" i18n="close"></a>
-        </div>
-    </dialog>
-
-    <dialog class="dialogYesNo">
-        <h3 class="dialogYesNoTitle"></h3>
-        <div class="dialogYesNoContent"></div>
-        <div class="buttons">
-            <a href="#" class="dialogYesNo-yesButton regular-button"></a>
-            <a href="#" class="dialogYesNo-noButton regular-button"></a>
-        </div>
-    </dialog>
-
-    <dialog class="dialogWait">
-        <div class="data-loading"></div>
-        <h3 class="dialogWaitTitle"></h3>
-        <div class="buttons">
-            <a href="#" class="dialogWait-cancelButton regular-button" i18n="cancel"></a>
-        </div>
-    </dialog>
-
-    <dialog class="dialogInformation">
-        <h3 class="dialogInformationTitle"></h3>
-        <div class="dialogInformationContent"></div>
-        <div class="buttons">
-            <a href="#" class="dialogInformation-confirmButton regular-button"></a>
-        </div>
-    </dialog>
+        <p class="copyright">© 2023 小刘技术空间 | 专业刷机 · 手机维修 · 网络逆向</p>
+    </footer>
+    
+    <script>
+        // 技能卡片切换
+        function toggleSkill(element) {
+            const card = element.closest('.skill-card');
+            card.classList.toggle('active');
+            
+            // 关闭其他卡片
+            document.querySelectorAll('.skill-card').forEach(otherCard => {
+                if (otherCard !== card) {
+                    otherCard.classList.remove('active');
+                }
+            });
+        }
+        
+        // 初始激活第一个卡片
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.skill-card').classList.add('active');
+        });
+    </script>
 </body>
 </html>
